@@ -19,10 +19,36 @@ app.get("/", function (req, res) {
 });
 
 
-// your first API endpoint... 
-app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
+
+// your first API endpoint...
+let resObj = {};
+app.get("/api/:date_string", (request, response) => {
+  let date_string = request.params.date_string ;
+ 
+ if (date_string.includes('-')) {
+      resObj['unix'] =  new Date(date_string).getTime();
+      resObj['utc']  = new Date(date_string).toUTCString();
+ } 
+  else {
+       date_string = parseInt(date_string);
+    resObj['unix'] =  new Date(date_string).getTime();
+      resObj['utc']  = new Date(date_string).toUTCString();
+       
+  }
+   
+  if (!resObj['unix'] || !resObj['utc'] ) {
+    response.json({error: 'Invalid Date'})
+  }
+  
+  response.json(resObj);
 });
+
+// your second API endpoint that returns current date/timestamp if no input provided... 
+app.get("/api", (request, response) => {
+  resObj['unix'] =  new Date().getTime();
+  resObj['utc']  = new Date().toUTCString();
+  response.json(resObj);
+})
 
 
 
